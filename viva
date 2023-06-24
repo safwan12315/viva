@@ -1,0 +1,93 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+#define MAX_NAME_LENGTH 50
+#define MAX_ORDERS 100
+
+typedef struct {
+    char name[MAX_NAME_LENGTH];
+    float price;
+    int quantity;
+} Beverage;
+
+void checkCart(Beverage *orders, int numOrders) {
+    printf("\nCart Details:\n");
+    printf("-------------\n");
+    printf("Name\t\tPrice\tQuantity\n");
+    printf("---------------------------\n");
+
+    float totalAmount = 0.0;
+    for (int i = 0; i < numOrders; i++) {
+        printf("%s\t$%.2f\t%d\n", orders[i].name, orders[i].price, orders[i].quantity);
+        totalAmount += orders[i].price * orders[i].quantity;
+    }
+    printf("\nTotal Order Amount: $%.2f\n", totalAmount);
+}
+
+int main() {
+    printf("-----SAFWAN'S DRINK STORE----\n\n");
+
+    Beverage menu[] = {
+        {"Cola", 25 , 0},
+        {"Pepsi", 20 , 0},
+        {"Fanta", 25 , 0},
+    };
+    int numMenuItems = sizeof(menu) / sizeof(menu[0]);
+
+    Beverage *orders = (Beverage *)malloc(MAX_ORDERS * sizeof(Beverage));
+    if (orders == NULL) {
+        printf("Memory allocation failed.\n");
+        return 1;
+    }
+    int numOrders = 0;
+
+    int choice;
+    do {
+        printf("Beverage Menu:\n");
+        printf("-------------\n");
+        for (int i = 0; i < numMenuItems; i++) {
+            printf("%d. %s - $%.2f\n", i + 1, menu[i].name, menu[i].price);
+        }
+        printf("4. Check Cart\n");
+        printf("5. Cancel Order\n");
+        printf("6. Exit\n");
+        printf("Enter your choice: ");
+        scanf("%d", &choice);
+
+        switch (choice) {
+            case 1:
+            case 2:
+            case 3: {
+                int index = choice - 1;
+                orders[numOrders].price = menu[index].price;
+                orders[numOrders].quantity++;
+                strcpy(orders[numOrders].name, menu[index].name);
+                numOrders++;
+                printf("You have added %s to your cart.\n", menu[index].name);
+                break;
+            }
+            case 4:
+                checkCart(orders, numOrders);
+                break;
+            case 5:
+                if (numOrders > 0) {
+                    printf("Order canceled.\n");
+                    numOrders--;
+                } else {
+                    printf("No order to cancel.\n");
+                }
+                break;
+            case 6:
+                printf("Exiting program.\n");
+                break;
+            default:
+                printf("Invalid choice. Please try again.\n");
+                break;
+        }
+    } while (choice != 6);
+
+    free(orders);
+
+    return 0;
+}
